@@ -1,10 +1,10 @@
-## 抽牌 SideProject-塔羅-Phase1
+## 抽牌 SideProject-塔羅-Phase2
 
-**快速入口：** [https://ibonlorita.github.io/tarot-game](https://ibonlorita.github.io/tarot-game)
+**快速入口：** [https://ibonlorita.github.io/tarot-game-OTP](https://ibonlorita.github.io/tarot-game-OPT)
 
 ### ✨ 功能特色
 
-- 🎴 15 張經典塔羅牌
+- 🎴 78 張經典塔羅牌
 - 🎲 Fisher-Yates 洗牌算法
 - 💫 互動式翻牌動畫
 - 💾 localStorage 次數限制
