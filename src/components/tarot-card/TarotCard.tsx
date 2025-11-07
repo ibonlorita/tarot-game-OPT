@@ -57,7 +57,19 @@ export const TarotCard: React.FC<TarotCardProps> = ({
    * 🖼️ 處理圖片載入錯誤
    */
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    console.error(`圖片載入失敗: ${card?.imageUrl}`);
+    const failedUrl = e.currentTarget.src;
+    console.error('❌ 圖片載入失敗！');
+    console.error('📋 牌卡資訊:', {
+      id: card?.id,
+      name: card?.chinese_name,
+      suit: card?.suit,
+      imageUrl: card?.imageUrl,
+    });
+    console.error('🔗 嘗試載入的路徑:', failedUrl);
+    console.error(
+      '💡 提示: 請檢查圖片檔案是否存在於 public/images/tarot/ 目錄'
+    );
+
     // 設定預設圖片（placeholder）
     e.currentTarget.src = 'https://via.placeholder.com/200x350?text=Tarot+Card';
   };

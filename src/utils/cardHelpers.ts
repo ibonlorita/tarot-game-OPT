@@ -1,7 +1,7 @@
 // utils/cardHelpers.ts
 
 import type { TarotCard, TarotSuit } from './../types/tarot';
-import { SUIT_COLORS, SUIT_ICONS, TAROT_IMAGE_BASE_URL, CARD_IMAGE_FILENAMES } from './constants';
+import { getTarotImageUrl, SUIT_COLORS, SUIT_ICONS } from './constants';
 
 
 // 根據花色取得對應顏色
@@ -81,25 +81,107 @@ export const areAllCardsRevealed = (cards: Array<{ isFlipped: boolean }>): boole
 }
 
 
-// 取得塔羅圖片URL
-/*
-* @param cardId - 牌卡ID
-* @returns 塔羅圖片URL
-*
-* @example
-* const cardId = 1;
-* const imageUrl = getTarotImageUrl(cardId);
-* console.log(imageUrl); // https://archive.org/download/rider-waite-tarot/RiderWaiteCards/01-magician.jpg
-*/
-export const getCardImageUrl = (cardId: number): string => {
-  const filename = CARD_IMAGE_FILENAMES[cardId];
-
-  if(!filename) {
-    console.warn(`找不到 ID ${cardId} 圖片檔名，使用預設圖`);
-    return '/image/card-back.png';
+/**
+ * 將數字 ID 轉換為 cardId 字串格式
+ * @param id - 牌的數字 ID (0-77)
+ * @returns cardId 字串格式
+ */
+const convertIdToCardId = (id: number): string => {
+  // 大阿爾克那 (0-21)
+  if (id <= 21) {
+    const majorNames = [
+      'fool', 'magician', 'priestess', 'empress', 'emperor',
+      'hierophant', 'lovers', 'chariot', 'strength', 'hermit',
+      'fortune', 'justice', 'hanged', 'death', 'temperance',
+      'devil', 'tower', 'star', 'moon', 'sun',
+      'judgement', 'world'
+    ];
+    return `${id.toString().padStart(2, '0')}-${majorNames[id]}`;
   }
-  return `${TAROT_IMAGE_BASE_URL}${filename}`;
+  
+  // 小阿爾克那
+  // 寶劍組 (22-35)
+  if (id >= 22 && id <= 35) {
+    const index = id - 22;
+    return getMinorCardId('swords', index);
+  }
+  // 聖杯組 (36-49)
+  if (id >= 36 && id <= 49) {
+    const index = id - 36;
+    return getMinorCardId('cups', index);
+  }
+  // 權杖組 (50-63)
+  if (id >= 50 && id <= 63) {
+    const index = id - 50;
+    return getMinorCardId('wands', index);
+  }
+  // 錢幣組 (64-77)
+  if (id >= 64 && id <= 77) {
+    const index = id - 64;
+    return getMinorCardId('pentacles', index);
+  }
+  
+  throw new Error(`無效的牌卡 ID: ${id}`);
+};
 
+/**
+ * 生成小阿爾克那的 cardId
+ * @param suit - 花色
+ * @param index - 在該花色中的索引 (0-13)
+ * @returns cardId 字串
+ */
+const getMinorCardId = (suit: string, index: number): string => {
+  // 0: ace, 1-9: 2-10, 10-13: page, knight, queen, king
+  if (index === 0) {
+    return `${suit}-ace`;
+  } else if (index >= 1 && index <= 9) {
+    // 不補零，直接使用數字（實際檔案名稱是 2.png, 7.png, 10.png 等）
+    return `${suit}-${index + 1}`;
+  } else {
+    const courtCards = ['page', 'knight', 'queen', 'king'];
+    return `${suit}-${courtCards[index - 10]}`;
+  }
+};
+
+/**
+ * 取得塔羅圖片的完整 URL
+ * 
+ * @param cardId - 牌卡ID（可以是數字 0-77 或字串格式：'00-fool', '01-magician', 'wands-ace', 'cups-02' 等）
+ * @returns 塔羅圖片URL
+ * 
+ * @example
+ * const imageUrl = getCardImageUrl('00-fool');
+ * console.log(imageUrl); // '/images/tarot/major_arcana_fool.png'
+ * 
+ * @example
+ * const imageUrl = getCardImageUrl('wands-ace');
+ * console.log(imageUrl); // '/images/tarot/minor_arcana_wands_ace.png'
+ * 
+ * @example
+ * const imageUrl = getCardImageUrl(0);
+ * console.log(imageUrl); // '/images/tarot/major_arcana_fool.png'
+ */
+export const getCardImageUrl = (cardId: string | number): string => {
+  try {
+    // 如果是數字，先轉換為 cardId 字串格式
+    const cardIdString = typeof cardId === 'number' 
+      ? convertIdToCardId(cardId)
+      : cardId;
+    
+    // 調用新版的 getTarotImageUrl 函數（來自 constants.ts）
+    const imageUrl = getTarotImageUrl(cardIdString);
+    
+    // 開發模式下輸出詳細調試信息
+    if (import.meta.env.DEV) {
+      console.log(`[getCardImageUrl] 輸入: ${cardId} (${typeof cardId}), cardId: ${cardIdString}, 圖片路徑: ${imageUrl}`);
+    }
+    
+    return imageUrl;
+  } catch (error) {
+    // 如果發生錯誤，使用預設圖片
+    console.error(`❌ 找不到 ID ${cardId} 的圖片，發生錯誤:`, error);
+    return '/images/card-back.png';  // ← 預設的卡牌背面圖
+  }
 };
 
 // 根據 ID 尋找牌卡
