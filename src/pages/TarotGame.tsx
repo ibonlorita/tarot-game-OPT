@@ -51,7 +51,9 @@ const TarotGame: React.FC = () => {
             {isLoading ? '🔮 神秘能量匯聚中...' : '✨ 開始神秘占卜'}
           </button>
 
-          <p className={styles.hint}>💫 靜心冥想，讓直覺引導您選擇命運之牌</p>
+          <p className={styles.hint}>
+            💫 靜心冥想，請先想您想要詢問的問題，讓直覺引導您選擇命運之牌 💫
+          </p>
         </section>
       )}
 

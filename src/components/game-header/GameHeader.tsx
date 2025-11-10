@@ -29,7 +29,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ remainingDraws }) => {
     <header className={styles.header}>
       {/* 🎯 主標題 */}
       <div className={styles.titleSection}>
-        <h1 className={styles.mainTitle}>🔮 神秘塔羅占卜</h1>
+        <h1 className={styles.mainTitle}>🔮 塔羅占卜 🔮</h1>
         <p className={styles.subtitle}>
           探索內心深處的智慧指引 · {dbStats.total} 張經典塔羅牌庫
         </p>
